@@ -52,8 +52,18 @@ function install_binaries {
 }
 
 function install() {
-    local version=""
     local path="$DEFAULT_INSTALL_PATH"
+    local version=""
+    local platform=""
+
+    if echo "$OSTYPE" | grep -Fq 'darwin'; then
+        platform="darwin"
+    elif echo "$OSTYPE" | grep -Fq 'linux'; then
+        platform="linux"
+    else
+        echo "Unsupported OS: $OSTYPE"
+        exit 1
+    fi
 
     while [[ $# -gt 0 ]]; do
         local key="$1"
@@ -81,16 +91,6 @@ function install() {
 
     assert_not_empty "--version" "$version"
     assert_not_empty "--path" "$path"
-
-    local platform=""
-    if echo "$OSTYPE" | grep -Fq 'darwin'; then
-        platform="darwin"
-        elif echo "$OSTYPE" | grep -Fq 'linux'; then
-        platform="linux"
-    else
-        echo "Unsupported OS: $OSTYPE"
-        exit 1
-    fi
 
     mkdir -p "$path"
     install_binaries "$version" "$path" "$platform"
