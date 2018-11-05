@@ -33,6 +33,14 @@ function assert_not_empty {
     fi
 }
 
+function create_terraform_install_paths {
+  local readonly path="$1"
+
+  echo "Creating install dirs for Terraform at $path"
+  mkdir -p "$path"
+  mkdir -p "$path/bin"
+}
+
 function install_binaries {
     local readonly version="$1"
     local readonly path="$2"
@@ -92,7 +100,7 @@ function install() {
     assert_not_empty "--version" "$version"
     assert_not_empty "--path" "$path"
 
-    mkdir -p "$path"
+    create_terraform_install_paths "$path"
     install_binaries "$version" "$path" "$platform"
 
     echo "Terraform install complete!"
