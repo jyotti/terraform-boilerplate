@@ -33,6 +33,18 @@ function assert_not_empty {
     fi
 }
 
+function check_terraform_installed {
+    local readonly version="$1"
+    local readonly path="$2"
+
+    if [[ -f "${path}/bin/terraform" ]]; then
+        if "${path}/bin/terraform" version | sed -n 1p | grep -Fq "${version}"; then
+            echo "Terraform [v${version}] has already installed";
+            exit 0
+        fi
+    fi
+}
+
 function create_terraform_install_paths {
   local readonly path="$1"
 
@@ -100,6 +112,7 @@ function install() {
     assert_not_empty "--version" "$version"
     assert_not_empty "--path" "$path"
 
+    check_terraform_installed "$version" "$path"
     create_terraform_install_paths "$path"
     install_binaries "$version" "$path" "$platform"
 
